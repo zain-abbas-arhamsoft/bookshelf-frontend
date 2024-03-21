@@ -52,7 +52,6 @@ export default function LoginForm() {
             email: formData.email,
             password: formData.password
         })
-
     }
 
     return (

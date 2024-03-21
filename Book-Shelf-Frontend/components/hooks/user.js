@@ -34,7 +34,6 @@ const useLogin = () => {
 // };
 
 const useSignUp = (userData) => {
-    console.log('userData', userData)
     const queryClient = useQueryClient(); 
     return useMutation(
         (userData) => userService.signUp(userData), 

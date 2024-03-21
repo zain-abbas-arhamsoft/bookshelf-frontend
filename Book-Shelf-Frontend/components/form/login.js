@@ -37,9 +37,11 @@ export default function LoginForm() {
     if (mutation.isSuccess) {
         // Access response status code and data
         const { data } = mutation;
-        const { accessToken, message } = data
-
+        const { accessToken } = data
+        if (accessToken)
+            router.push("/menu")
         localStorage.setItem('accessToken', accessToken)
+
     }
     const handleChange = (e) => {
         const { name, value } = e.target;
