@@ -1,54 +1,73 @@
-import { useQueryClient, useMutation } from "react-query";
-import userService from "../services/user";
-// import { useMutation,useQueryClient } from "@tanstack/react-query"
+// user.js
 
-const useLogin = () => {
-    // const queryClient = useQueryClient();
-    const queryClient = QueryClientProvider()
-    return useMutation(
-        (credentials) => userService.login(credentials),
-        {
-            onSuccess: () => {
-                queryClient.invalidateQueries("user"); // Assuming you have a query for the user data
-            },
+import { useQuery, useMutation } from "react-query";
+import { BASE_URL } from "@/utils/config";
+// import { isLoggedIn } from "@/helper/helper";
+// var accessToken = isLoggedIn()
+export function useGenresQuery(accessToken) {
+    return useQuery("genres", async () => {
+        const response = await fetch(`${BASE_URL}v1/book/genre`, {
+            headers: {
+                Authorization: accessToken
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch genres");
         }
-    );
-};
+
+        return response.json();
+    });
+}
 
 
-// const useSignUp = (userData) => {
-//     // const queryClient = useQueryClient();
-//     // const queryClient = QueryClientProvider()
-//     return useMutation({
-//         queryFn: async () => signUp(userData),
-//         queryKey: ["user"],
-//     })
-//     // return useMutation(
-//     //     (userData) => signUp(userData), // Pass userData to signUp
-//     //     {
-//     //         onSuccess: () => {
-//     //             queryClient.invalidateQueries("user");
-//     //         },
-//     //     }
-//     // );
-// };
+export function useGetBooksQuery(accessToken) {
+    return useQuery("books", async () => {
+        const response = await fetch(`${BASE_URL}v1/book/books`, {
+            headers: {
+                Authorization: accessToken
+            }
+        });
 
-const useSignUp = (userData) => {
-    const queryClient = useQueryClient(); 
-    return useMutation(
-        (userData) => userService.signUp(userData), 
-        {
-            onSuccess: () => {
-                queryClient.invalidateQueries("user");
-            },
+        if (!response.ok) {
+            throw new Error("Failed to fetch books");
         }
+
+        return response.json();
+    });
+}
+export function useUserRegisterMutation() {
+    return useMutation(newUser =>
+        fetch(`${BASE_URL}v1/user/register`, {
+            method: 'POST',
+            body: JSON.stringify(newUser),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+            },
+        }).then(res => res.json())
+    )
+}
+
+export function useUserLoginMutation() {
+    return useMutation(User =>
+        fetch(`${BASE_URL}v1/user/login`, {
+            method: 'POST',
+            body: JSON.stringify(User),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+            },
+        }).then(res => res.json())
+    )
+}
+
+export function useCreateBookMutation(accessToken) {
+    return useMutation((bookData) =>
+        fetch(`${BASE_URL}v1/book/create`, {
+            method: "POST",
+            headers: {
+                Authorization: accessToken
+            },
+            body: bookData,
+        }).then((res) => res.json())
     );
-};
-
-
-
-
-export {
-    useLogin,
-    useSignUp,
-};
+}
