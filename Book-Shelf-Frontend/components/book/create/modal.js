@@ -6,6 +6,7 @@ import { useGenresQuery } from "@/components/hooks/user";
 import { useCreateBookMutation } from "@/components/hooks/user";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useQueryClient } from 'react-query';
 
 const addBookSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
@@ -17,7 +18,8 @@ const addBookSchema = z.object({
   image: z.object({}).nullable().optional(), // Define image as an object, allowing null
 });
 
-export default function AddBookModal({ isOpen, onClose }) {
+export default function AddBookModal({ isOpen, onClose, accessToken }) {
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     title: '',
     author: '',
@@ -34,7 +36,6 @@ export default function AddBookModal({ isOpen, onClose }) {
     resolver: zodResolver(addBookSchema),
   });
 
-  const accessToken = localStorage.getItem('accessToken');
   const genreQuery = useGenresQuery(accessToken);
   const mutation = useCreateBookMutation(accessToken);
 
@@ -67,10 +68,11 @@ export default function AddBookModal({ isOpen, onClose }) {
     data.append('publicationYear', updatedFormData.publicationYear);
     data.append('status', updatedFormData.status);
     data.append('image', updatedFormData.image);
+    onClose()
     const mutationResult = await mutation.mutateAsync(data);
     let { success, message } = mutationResult;
     if (success === true) {
-      onClose()
+      queryClient.invalidateQueries("books");
     } else {
       toast.error(message);
     }
@@ -188,6 +190,7 @@ export default function AddBookModal({ isOpen, onClose }) {
                   <div className="form-control mb-4">
                     <label htmlFor="genre" className="block mb-1">Genre</label>
                     <select {...register("genre")} onChange={handleChange} defaultValue={formData.genre} className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none">
+                      <option value="">Select Genre</option> {/* Add this line */}
                       {genreQuery.isLoading ? (
                         <option>Loading...</option>
                       ) : genreQuery.isError ? (

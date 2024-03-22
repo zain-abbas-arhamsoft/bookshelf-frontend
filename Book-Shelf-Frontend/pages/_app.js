@@ -1,21 +1,24 @@
 import "@/styles/globals.css";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "react-query";
+import { Provider } from 'react-redux';
 import { ReactQueryDevtools } from "react-query/devtools";
 import { NextUIProvider } from '@nextui-org/react'
-
+import { queryClient } from "@/utils/queryClient";
+import { store, persistor } from '@/store/store';
+import { PersistGate } from 'redux-persist/integration/react';
 export default function App({ Component, pageProps }) {
-  /* Create a client */
-  const queryClient = new QueryClient();
   return (
     <>
-      {/* Provide the client to our App */}
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
       <QueryClientProvider client={queryClient}>
-        {/* <NextUIProvider> */}
-
+        <NextUIProvider>
           <Component {...pageProps} />
-          {/* </NextUIProvider> */}
+          </NextUIProvider>
         <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
+          </QueryClientProvider>
+          </PersistGate>
+      </Provider>
     </>
   );
 }

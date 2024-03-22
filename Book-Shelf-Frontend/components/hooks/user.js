@@ -1,9 +1,5 @@
-// user.js
-
 import { useQuery, useMutation } from "react-query";
 import { BASE_URL } from "@/utils/config";
-// import { isLoggedIn } from "@/helper/helper";
-// var accessToken = isLoggedIn()
 export function useGenresQuery(accessToken) {
     return useQuery("genres", async () => {
         const response = await fetch(`${BASE_URL}v1/book/genre`, {

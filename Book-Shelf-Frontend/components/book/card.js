@@ -5,9 +5,8 @@ const Bookcard = ({ book }) => {
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                 <Image
                     alt={book.title}
-                    className="object-cover rounded-xl"
+                    className="object-cover rounded-xl h-44"
                     src={`${process.env.CLOUDINARY_IMAGE_URL}${book.image}`}
-                    // src={`https://img.freepik.com/free-photo/book-composition-with-open-book_23-2147690555.jpg?size=626&ext=jpg&ga=GA1.1.1222169770.1710979200&semt=sph`}
                     width={270}
                 />
             </CardHeader>

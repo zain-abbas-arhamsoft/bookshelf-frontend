@@ -6,8 +6,10 @@ import { useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUserRegisterMutation } from "@/components/hooks/user";
-
 import { useRouter } from "next/router";
+import { useSelector } from 'react-redux';
+import { selectAccessToken } from '@/store/features/user/userSlice';
+import { useDispatch } from "react-redux";
 const signUpSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
@@ -16,6 +18,12 @@ const signUpSchema = z.object({
 
 export default function LoginForm() {
     const router = useRouter()
+    const dispatch = useDispatch();
+
+    const accessToken = useSelector(selectAccessToken);
+    if (accessToken) {
+        router.push('/menu')
+    }
     const [formData, setFormData] = useState({
         email: '',
         password: '',

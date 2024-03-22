@@ -6,15 +6,23 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { useDispatch } from 'react-redux';
 import { useUserLoginMutation } from "@/components/hooks/user";
+import { useSelector } from 'react-redux';
+import { selectAccessToken, setAccessToken } from '@/store/features/user/userSlice';
 const loginSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
 });
 
 export default function LoginForm() {
+    const dispatch = useDispatch();
     const router = useRouter()
+
+    const accessToken = useSelector(selectAccessToken);
+    if (accessToken) {
+        router.push('/menu')
+    }
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -40,7 +48,7 @@ export default function LoginForm() {
             });
             let { success, message, accessToken } = mutationResult;
             if (success === true) {
-                localStorage.setItem('accessToken', accessToken)
+                dispatch(setAccessToken(accessToken)); // Dispatch accessToken to Redux store
                 router.push('/menu');
             } else {
                 toast.error(message);
