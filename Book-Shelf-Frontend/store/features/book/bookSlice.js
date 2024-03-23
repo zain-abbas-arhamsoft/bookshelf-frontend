@@ -21,6 +21,16 @@ const initialBookIdState = {
     error: null,
 };
 
+
+// Initial state for featured books slice
+const initialDeleteBookState = {
+    bookId: "",
+    books: [],
+    featuredBooks: [],
+    loading: false,
+    error: null,
+};
+
 // Create slice for books
 const booksSlice = createSlice({
     name: 'books',
@@ -57,20 +67,22 @@ const bookIdSlice = createSlice({
         saveBookId(state, action) {
             state.loading = false;
             state.bookId = action.payload;
-
         },
     },
 });
 
+
 // Create slice for delete book
 const deleteBookSlice = createSlice({
     name: 'deleteBook',
-    initialState: initialBookIdState,
+    initialState: initialDeleteBookState,
     reducers: {
         deleteBook(state, action) {
             state.loading = false;
-            state.bookId = action.payload;
-
+            state.books = action.payload;
+            state.featuredBooks = action.payload;
+            // Reset the book ID
+            state.bookId = "";
         },
     },
 });

@@ -9,7 +9,10 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { fetchFeaturedBooks, deleteBook } from '@/store/features/book/bookSlice';
 import { useDeleteBookMutation } from "@/components/hooks/user";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const BookshelfMenu = () => {
+
     const router = useRouter()
     const dispatch = useDispatch();
     const [searchQuery, setSearchQuery] = useState('');
@@ -67,8 +70,10 @@ const BookshelfMenu = () => {
         data = []
     }
     const bookDeleted = useDeleteBookMutation(accessToken)
+
     const deleteAccount = async () => {
         bookDeleted.mutateAsync()
+        dispatch(deleteBook([]))
     };
 
     return (
