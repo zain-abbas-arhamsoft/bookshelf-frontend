@@ -24,7 +24,6 @@ export function useGetBooksQuery(accessToken) {
                 Authorization: accessToken
             }
         });
-
         if (!response.ok) {
             throw new Error("Failed to fetch books");
         }
@@ -78,5 +77,17 @@ export function useBookStatusMutation(accessToken) {
             },
             body: JSON.stringify(bookStatus),
          }).then((res) => res.json())
+    });
+};
+
+export function useDeleteBookMutation(accessToken) {
+    return useMutation(() => {
+        fetch(`${BASE_URL}v1/book/delete-books`, {
+            method: "DELETE",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                Authorization: accessToken,
+            },
+        }).then((res) => res.json())
     });
 };

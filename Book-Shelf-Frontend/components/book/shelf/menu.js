@@ -1,5 +1,5 @@
-import React, {  useState } from "react";
-import { FaPlus, FaSignOutAlt } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaPlus, FaSignOutAlt, FaTrash } from "react-icons/fa";
 import Bookcard from "@/components/book/card";
 import AddBookModal from "@/components/book/create/modal";
 import { useGetBooksQuery } from "@/components/hooks/user";
@@ -7,11 +7,13 @@ import { useSelector } from 'react-redux';
 import { selectAccessToken, setAccessToken } from '@/store/features/user/userSlice';
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
-import { fetchBooks, fetchFeaturedBooks } from '@/store/features/book/bookSlice';
+import { fetchFeaturedBooks, deleteBook } from '@/store/features/book/bookSlice';
+import { useDeleteBookMutation } from "@/components/hooks/user";
 const BookshelfMenu = () => {
     const router = useRouter()
     const dispatch = useDispatch();
     const [searchQuery, setSearchQuery] = useState('');
+
     const [filteredBooks, setFilteredBooks] = useState(null); // Initialize filteredBooks with null
     const [filteredPlanToReadBooks, setFilteredPlanToReadBooks] = useState(null); // Initialize filteredBooks with null
     const [filteredCompletedBooks, setFilteredCompletedBooks] = useState(null); // Initialize filteredBooks with null
@@ -21,25 +23,16 @@ const BookshelfMenu = () => {
         router.push('/login')
     }
     const [isModalOpen, setIsModalOpen] = useState(false);
-
     const openModal = () => {
         setIsModalOpen(true);
     };
-
     const closeModal = () => {
         setIsModalOpen(false);
-        setIsPlanToReadModalOpen(false)
-        setIsReadTocompletedModalOpen(false)
     };
-
-
     const handleLogout = () => {
         dispatch(setAccessToken(null));
         router.push('/login')
     };
-
- 
-
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
             // Filter books based on search query
@@ -64,15 +57,19 @@ const BookshelfMenu = () => {
         }
     };
 
-
-
-
+    // const mutation = useGetBooksQuery(accessToken);
     const mutation = useGetBooksQuery(accessToken);
-    const { data } = mutation
-    if (data?.data.length > 0) {
-        dispatch(fetchBooks(data?.data)); // Dispatch accessToken to Redux store
+    let data;
+    if (mutation.isSuccess === true) {
+        data =  mutation?.data
     }
-
+    else {
+        data = []
+    }
+    const bookDeleted = useDeleteBookMutation(accessToken)
+    const deleteAccount = async () => {
+        bookDeleted.mutateAsync()
+    };
 
     return (
         <div className="mx-auto mt-8 relative">
@@ -87,13 +84,22 @@ const BookshelfMenu = () => {
                     <div className="flex items-center space-x-4 gap-10 w-1/5 justify-end">
                         <FaPlus
                             onClick={openModal}
-                            className="text-white-900 cursor-pointer"
+                            className="text-gray-900 cursor-pointer"
                             size={24}
+                            title="Add Book"
+
                         />
                         <FaSignOutAlt
                             onClick={handleLogout} // Handle logout
                             className="text-gray-600 cursor-pointer"
                             size={24}
+                            title="Logout"
+                        />
+                        <FaTrash
+                            onClick={deleteAccount}
+                            className="text-gray-600 cursor-pointer"
+                            size={24}
+                            title="Delete Account"
                         />
                     </div>
                 </div>
@@ -108,7 +114,7 @@ const BookshelfMenu = () => {
                     className="p-4 border rounded-md focus:outline-none focus:border-blue-500 w-2/5"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleKeyPress} 
+                    onKeyDown={handleKeyPress}
                 />
             </div>
             <div className="w-full">
@@ -119,7 +125,7 @@ const BookshelfMenu = () => {
                         </h2>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
-                        {filteredBooks !== null ? 
+                        {filteredBooks !== null ?
                             filteredBooks.map((book) => (
                                 <Bookcard key={book._id} book={book} />
                             )) :
@@ -142,14 +148,14 @@ const BookshelfMenu = () => {
 
                     <div className="overflow-x-auto max-w-full" >
                         <div className="grid grid-cols-3 gap-4" >
-                            {filteredPlanToReadBooks !== null ? 
+                            {filteredPlanToReadBooks !== null ?
                                 filteredPlanToReadBooks.map((book) => (
                                     <Bookcard key={book._id} book={book}
-/>
+                                    />
                                 )) :
                                 data?.data?.filter((book) => book.status === "Plan to Read")?.map((book) => (
                                     <Bookcard key={book._id} book={book}
-/>
+                                    />
                                 ))
                             }
                         </div>
@@ -157,7 +163,7 @@ const BookshelfMenu = () => {
                             <div className="mt-12 text-gray-600">
                                 No Books Found
                             </div>)}
-                    
+
                     </div>
                 </div>
 
@@ -188,7 +194,7 @@ const BookshelfMenu = () => {
                     <AddBookModal isOpen={isModalOpen} onClose={closeModal} accessToken={accessToken} />
                 </div>
             )}
-          
+
         </div>
     );
 };

@@ -40,12 +40,16 @@ const featuredBooksSlice = createSlice({
     reducers: {
         fetchFeaturedBooks(state, action) {
             state.loading = false;
-            state.featuredBooks = state.featuredBooks.concat(action.payload);
+            if (action.payload.length > 0)
+                state.featuredBooks = state.featuredBooks.concat(action.payload);
+            else
+                state.featuredBooks = action.payload;
+
         },
     },
 });
 
-// Create slice for featured books
+// Create slice for book Id
 const bookIdSlice = createSlice({
     name: 'bookId',
     initialState: initialBookIdState,
@@ -58,15 +62,30 @@ const bookIdSlice = createSlice({
     },
 });
 
+// Create slice for delete book
+const deleteBookSlice = createSlice({
+    name: 'deleteBook',
+    initialState: initialBookIdState,
+    reducers: {
+        deleteBook(state, action) {
+            state.loading = false;
+            state.bookId = action.payload;
+
+        },
+    },
+});
+
 // Export actions from each slice
 export const { fetchBooks } = booksSlice.actions;
 export const { fetchFeaturedBooks } = featuredBooksSlice.actions;
 export const { saveBookId } = bookIdSlice.actions;
+export const { deleteBook } = deleteBookSlice.actions
 
 // Combine reducers from each slice
 export const booksReducer = booksSlice.reducer;
 export const featuredBooksReducer = featuredBooksSlice.reducer;
 export const bookIdReducer = bookIdSlice.reducer;
+export const deleteBookReducer = deleteBookSlice.reducer
 
 export const getBookId = (state) => state.books.bookId;
 
