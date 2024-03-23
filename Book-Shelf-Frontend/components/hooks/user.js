@@ -67,3 +67,16 @@ export function useCreateBookMutation(accessToken) {
         }).then((res) => res.json())
     );
 }
+
+export function useBookStatusMutation(accessToken) {
+    return useMutation((bookStatus) => {
+         fetch(`${BASE_URL}v1/book/update-status`, {
+            method: "PUT",
+             headers: {
+                 "Content-type": "application/json; charset=UTF-8",
+                Authorization: accessToken,
+            },
+            body: JSON.stringify(bookStatus),
+         }).then((res) => res.json())
+    });
+};

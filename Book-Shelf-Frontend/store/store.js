@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { booksReducer } from '@/store/features/book/bookSlice';
-import { featuredBooksReducer } from '@/store/features/book/bookSlice';
+import { booksReducer, featuredBooksReducer,bookIdReducer } from '@/store/features/book/bookSlice';
 import userReducer from '@/store/features/user/userSlice';
 import { persistStore, persistReducer } from 'redux-persist';
 import persistConfig from '@/utils/persistConfig';
@@ -14,7 +13,7 @@ export const store = configureStore({
         books: persistedBookReducer,
         featuredBooks: persistedFeaturedBookReducer,
         user: persistedUserReducer,
-
+        bookId: bookIdReducer,
     },
 });
 export const persistor = persistStore(store);

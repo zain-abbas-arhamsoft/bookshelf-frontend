@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {  useState } from "react";
 import { FaPlus, FaSignOutAlt } from "react-icons/fa";
 import Bookcard from "@/components/book/card";
 import AddBookModal from "@/components/book/create/modal";
@@ -21,22 +21,25 @@ const BookshelfMenu = () => {
         router.push('/login')
     }
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     const openModal = () => {
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
+        setIsPlanToReadModalOpen(false)
+        setIsReadTocompletedModalOpen(false)
     };
+
 
     const handleLogout = () => {
         dispatch(setAccessToken(null));
         router.push('/login')
     };
 
+ 
 
-
-    // Function to handle search when Enter key is pressed
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
             // Filter books based on search query
@@ -52,19 +55,25 @@ const BookshelfMenu = () => {
                 book.title.toLowerCase().includes(searchQuery.toLowerCase()) && book.status === "Completed"
             );
             setFilteredCompletedBooks(filteredCompletedBooks.length > 0 ? filteredCompletedBooks : [])
-            if(filteredBooks?.length>0)
+            if (filteredBooks?.length > 0)
                 dispatch(fetchFeaturedBooks(filteredBooks));
-            if(filteredPlanToReadBooks?.length>0)
+            if (filteredPlanToReadBooks?.length > 0)
                 dispatch(fetchFeaturedBooks(filteredPlanToReadBooks));
-            if(filteredCompletedBooks?.length>0)
-            dispatch(fetchFeaturedBooks(filteredCompletedBooks));
+            if (filteredCompletedBooks?.length > 0)
+                dispatch(fetchFeaturedBooks(filteredCompletedBooks));
         }
     };
+
+
+
+
     const mutation = useGetBooksQuery(accessToken);
     const { data } = mutation
     if (data?.data.length > 0) {
         dispatch(fetchBooks(data?.data)); // Dispatch accessToken to Redux store
     }
+
+
     return (
         <div className="mx-auto mt-8 relative">
             <div className="bg-rose-500 p-5 items-center mb-20">
@@ -81,13 +90,11 @@ const BookshelfMenu = () => {
                             className="text-white-900 cursor-pointer"
                             size={24}
                         />
-                        {/* Create Book icon */}
                         <FaSignOutAlt
                             onClick={handleLogout} // Handle logout
                             className="text-gray-600 cursor-pointer"
                             size={24}
                         />
-                        {/* Logout icon */}
                     </div>
                 </div>
 
@@ -101,11 +108,10 @@ const BookshelfMenu = () => {
                     className="p-4 border rounded-md focus:outline-none focus:border-blue-500 w-2/5"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleKeyPress} // Call handleKeyPress on key press
+                    onKeyDown={handleKeyPress} 
                 />
             </div>
             <div className="w-full">
-                {/* Reading section */}
                 <div className="flex flex-col items-center space-y-4 w-full">
                     <div className="w-full text-center">
                         <h2 className="text-2xl font-bold mb-2 text-gray-900 w-full inline-block">
@@ -113,7 +119,7 @@ const BookshelfMenu = () => {
                         </h2>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
-                        {filteredBooks !== null ? // Check if filteredBooks is not null
+                        {filteredBooks !== null ? 
                             filteredBooks.map((book) => (
                                 <Bookcard key={book._id} book={book} />
                             )) :
@@ -122,40 +128,39 @@ const BookshelfMenu = () => {
                             ))
                         }
                     </div>
-                
-                    {!data?.data?.filter((book) => book.status === "Reading")?.length && (
 
+                    {!data?.data?.filter((book) => book.status === "Reading")?.length && (
                         <div className="mt-12 text-gray-600">
                             No Books Found
                         </div>)}
                 </div>
 
-                {/* Completed section */}
                 <div className="flex flex-col items-center space-y-4">
                     <h2 className="text-2xl font-bold mb-2 mt-4 text-gray-900">
                         Plan to Read
                     </h2>
 
-                    <div className="overflow-x-auto max-w-full">
-                        <div className="grid grid-cols-3 gap-4">
-                            {filteredPlanToReadBooks !== null ? // Check if filteredBooks is not null
+                    <div className="overflow-x-auto max-w-full" >
+                        <div className="grid grid-cols-3 gap-4" >
+                            {filteredPlanToReadBooks !== null ? 
                                 filteredPlanToReadBooks.map((book) => (
-                                    <Bookcard key={book._id} book={book} />
+                                    <Bookcard key={book._id} book={book}
+/>
                                 )) :
                                 data?.data?.filter((book) => book.status === "Plan to Read")?.map((book) => (
-                                    <Bookcard key={book._id} book={book} />
+                                    <Bookcard key={book._id} book={book}
+/>
                                 ))
                             }
                         </div>
                         {!data?.data?.filter((book) => book.status === "Plan to Read")?.length && (
-
                             <div className="mt-12 text-gray-600">
                                 No Books Found
                             </div>)}
+                    
                     </div>
                 </div>
 
-                {/* Plan to Read section */}
                 <div className="flex flex-col items-center space-y-4">
                     <h2 className="text-2xl font-bold mb-2 mt-4 text-gray-900">
                         Completed
@@ -171,20 +176,19 @@ const BookshelfMenu = () => {
                         }
                     </div>
                     {!data?.data?.filter((book) => book.status === "Completed")?.length && (
-
                         <div className="mt-12 text-gray-600">
                             No Books Found
                         </div>)}
-
                 </div>
             </div>
-            {/* Modal */}
+
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center z-50">
                     <div className="modal-overlay absolute inset-0 bg-gray-500 opacity-50" onClick={closeModal} />
                     <AddBookModal isOpen={isModalOpen} onClose={closeModal} accessToken={accessToken} />
                 </div>
             )}
+          
         </div>
     );
 };
