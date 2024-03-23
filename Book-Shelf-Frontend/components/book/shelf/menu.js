@@ -9,8 +9,6 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { fetchFeaturedBooks, deleteBook } from '@/store/features/book/bookSlice';
 import { useDeleteBookMutation } from "@/components/hooks/user";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 const BookshelfMenu = () => {
 
     const router = useRouter()
@@ -60,7 +58,6 @@ const BookshelfMenu = () => {
         }
     };
 
-    // const mutation = useGetBooksQuery(accessToken);
     const mutation = useGetBooksQuery(accessToken);
     let data;
     if (mutation.isSuccess === true) {
@@ -70,6 +67,7 @@ const BookshelfMenu = () => {
         data = []
     }
     const bookDeleted = useDeleteBookMutation(accessToken)
+  
 
     const deleteAccount = async () => {
         bookDeleted.mutateAsync()
@@ -77,6 +75,7 @@ const BookshelfMenu = () => {
     };
 
     return (
+        <>
         <div className="mx-auto mt-8 relative">
             <div className="bg-rose-500 p-5 items-center mb-20">
                 <div className="container flex justify-between items-center ml-auto mr-auto">
@@ -200,7 +199,8 @@ const BookshelfMenu = () => {
                 </div>
             )}
 
-        </div>
+            </div>
+            </>
     );
 };
 export default BookshelfMenu;

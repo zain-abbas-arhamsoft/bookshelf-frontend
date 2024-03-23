@@ -56,10 +56,7 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
       genre: selectedGenre?._id,
     };
 
-    // Create FormData object
     const data = new FormData();
-
-    // Append other form data fields
     data.append('title', updatedFormData.title);
     data.append('author', updatedFormData.author);
     data.append('publicationHouse', updatedFormData.publicationHouse);
@@ -123,9 +120,6 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                       </p>
                     )}
                   </div>
-
-                  {/* Rest of the form fields */}
-
 
                   <div className="form-control mb-4">
                     <label htmlFor="author" className="block mb-1">Author Name</label>

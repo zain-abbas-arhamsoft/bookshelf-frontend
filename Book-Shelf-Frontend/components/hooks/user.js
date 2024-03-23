@@ -16,7 +16,6 @@ export function useGenresQuery(accessToken) {
     });
 }
 
-
 export function useGetBooksQuery(accessToken) {
     return useQuery("books", async () => {
         const response = await fetch(`${BASE_URL}v1/book/books`, {
@@ -31,6 +30,7 @@ export function useGetBooksQuery(accessToken) {
         return response.json();
     });
 }
+
 export function useUserRegisterMutation() {
     return useMutation(newUser =>
         fetch(`${BASE_URL}v1/user/register`, {
