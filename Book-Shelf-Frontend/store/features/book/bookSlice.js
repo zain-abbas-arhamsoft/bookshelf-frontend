@@ -14,7 +14,7 @@ const initialFeaturedBooksState = {
     error: null,
 };
 
-// Initial state for featured books slice
+// Initial state for book id slice
 const initialBookIdState = {
     bookId: "",
     loading: false,
@@ -22,7 +22,7 @@ const initialBookIdState = {
 };
 
 
-// Initial state for featured books slice
+// Initial state for delete books slice
 const initialDeleteBookState = {
     bookId: "",
     books: [],
