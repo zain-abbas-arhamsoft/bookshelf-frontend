@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "react-query";
 import { BASE_URL } from "@/utils/config";
+
 export function useGenresQuery(accessToken) {
     return useQuery("genres", async () => {
         const response = await fetch(`${BASE_URL}v1/book/genre`, {

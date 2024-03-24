@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from 'react-redux';
 import { useUserLoginMutation } from "@/components/hooks/user";
 import { useSelector } from 'react-redux';
-import { selectAccessToken, setAccessToken } from '@/store/features/user/userSlice';
+import { selectAccessToken, setAccessToken } from '@/redux/features/user/userSlice';
 const loginSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string().min(8, { message: "Password must be at least 8 characters long" }),

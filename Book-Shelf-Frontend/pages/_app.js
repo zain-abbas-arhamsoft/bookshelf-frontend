@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { ReactQueryDevtools } from "react-query/devtools";
 import { NextUIProvider } from '@nextui-org/react'
 import { queryClient } from "@/utils/queryClient";
-import { store, persistor } from '@/store/store';
+import { store, persistor } from '@/redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 export default function App({ Component, pageProps }) {
   return (

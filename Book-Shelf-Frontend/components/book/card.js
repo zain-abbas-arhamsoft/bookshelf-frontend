@@ -1,10 +1,10 @@
 import { Card, CardHeader, CardBody, Image, Button } from "@nextui-org/react";
-import { selectAccessToken } from '@/store/features/user/userSlice';
+import { selectAccessToken } from '@/redux/features/user/userSlice';
 import { useSelector } from "react-redux";
 import { useBookStatusMutation } from "@/components/hooks/user";
 import { useQueryClient } from "react-query";
 import { useDispatch } from "react-redux";
-import { saveBookId } from "@/store/features/book/bookSlice";
+import { saveBookId } from "@/redux/features/book/bookSlice";
 const Bookcard = ({ book }) => {
     const queryClient = useQueryClient()
     const dispatch = useDispatch()
@@ -48,7 +48,7 @@ const Bookcard = ({ book }) => {
                         className="bg-blue-500 text-white py-1 px-2 rounded-md mt-2"
                         onClick={() => getBookId(book)}
                     >
-                        {book.status === 'Plan to Read' ? 'Plan to Read' : 'Reading'}
+                        {book.status === 'Plan to Read' ? 'Update Plan to Read Status' : 'Update Reading Status'}
                     </Button>
                 )}
             </CardBody>

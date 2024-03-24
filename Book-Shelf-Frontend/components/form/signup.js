@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useUserRegisterMutation } from "@/components/hooks/user";
 import { useRouter } from "next/router";
 import { useSelector } from 'react-redux';
-import { selectAccessToken } from '@/store/features/user/userSlice';
+import { selectAccessToken } from '@/redux/features/user/userSlice';
 import { useDispatch } from "react-redux";
 const signUpSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),

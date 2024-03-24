@@ -4,10 +4,10 @@ import Bookcard from "@/components/book/card";
 import AddBookModal from "@/components/book/create/modal";
 import { useGetBooksQuery } from "@/components/hooks/user";
 import { useSelector } from 'react-redux';
-import { selectAccessToken, setAccessToken } from '@/store/features/user/userSlice';
+import { selectAccessToken, setAccessToken } from '@/redux/features/user/userSlice';
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
-import { fetchFeaturedBooks, deleteBook } from '@/store/features/book/bookSlice';
+import { fetchFeaturedBooks, deleteBook,fetchBooks } from '@/redux/features/book/bookSlice';
 import { useDeleteBookMutation } from "@/components/hooks/user";
 const BookshelfMenu = () => {
 
@@ -61,14 +61,14 @@ const BookshelfMenu = () => {
     const mutation = useGetBooksQuery(accessToken);
     let data;
     if (mutation.isSuccess === true) {
-        data =  mutation?.data
+        data = mutation?.data
+        dispatch(fetchBooks(data))
     }
     else {
         data = []
+        dispatch(fetchBooks(data))
     }
     const bookDeleted = useDeleteBookMutation(accessToken)
-  
-
     const deleteAccount = async () => {
         bookDeleted.mutateAsync()
         dispatch(deleteBook([]))
