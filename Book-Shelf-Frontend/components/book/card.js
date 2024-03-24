@@ -1,10 +1,10 @@
 import { Card, CardHeader, CardBody, Image, Button } from "@nextui-org/react";
-import { selectAccessToken } from '@/redux/features/user/userSlice';
+import { selectAccessToken } from '@/redux/features/user/slice';
 import { useSelector } from "react-redux";
 import { useBookStatusMutation } from "@/components/hooks/user";
 import { useQueryClient } from "react-query";
 import { useDispatch } from "react-redux";
-import { saveBookId } from "@/redux/features/book/bookSlice";
+import { saveBookId } from "@/redux/features/book/slice";
 const Bookcard = ({ book }) => {
     const queryClient = useQueryClient()
     const dispatch = useDispatch()

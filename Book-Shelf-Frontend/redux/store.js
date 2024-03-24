@@ -1,16 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { booksReducer } from '@/redux/features/book/bookSlice';
-import userReducer from '@/redux/features/user/userSlice';
-import { persistStore, persistReducer } from 'redux-persist';
-import persistConfig from '@/utils/persistConfig';
-
-const persistedUserReducer = persistReducer(persistConfig, userReducer);
-const persistedBookReducer = persistReducer(persistConfig, booksReducer);
+import rootReducer from '@/redux/reducer/root';
+import { persistStore } from 'redux-persist';
+import customMiddleware from '@/middleware/custom';
+import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 
 export const store = configureStore({
-    reducer: {
-        books: persistedBookReducer,
-        user: persistedUserReducer,
-    },
+    reducer: rootReducer,
 });
 export const persistor = persistStore(store);

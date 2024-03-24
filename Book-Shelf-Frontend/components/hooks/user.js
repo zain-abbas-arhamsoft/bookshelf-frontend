@@ -24,10 +24,11 @@ export function useGetBooksQuery(accessToken) {
                 Authorization: accessToken
             }
         });
+        if (response.status == 403)
+            throw new Error(response.statusText)
         if (!response.ok) {
             throw new Error("Failed to fetch books");
         }
-
         return response.json();
     });
 }
@@ -70,14 +71,14 @@ export function useCreateBookMutation(accessToken) {
 
 export function useBookStatusMutation(accessToken) {
     return useMutation((bookStatus) => {
-         fetch(`${BASE_URL}v1/book/update-status`, {
+        fetch(`${BASE_URL}v1/book/update-status`, {
             method: "PUT",
-             headers: {
-                 "Content-type": "application/json; charset=UTF-8",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
                 Authorization: accessToken,
             },
             body: JSON.stringify(bookStatus),
-         }).then((res) => res.json())
+        }).then((res) => res.json())
     });
 };
 
