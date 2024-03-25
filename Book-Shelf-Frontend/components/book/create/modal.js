@@ -2,37 +2,46 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGenresQuery } from "@/components/hooks/user";
-import { useCreateBookMutation } from "@/components/hooks/user";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useQueryClient } from 'react-query';
+import { useGenresQuery } from "@/pages/api/user";
+import { useCreateBookMutation } from "@/pages/api/user";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useQueryClient } from "react-query";
 
 const addBookSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   author: z.string().min(1, { message: "Author name is required" }),
-  publicationHouse: z.string().min(1, { message: "Publication House is required" }),
-  publicationDate: z.string().min(1, { message: "Publication Date is required" }),
+  publicationHouse: z
+    .string()
+    .min(1, { message: "Publication House is required" }),
+  publicationDate: z
+    .string()
+    .min(1, { message: "Publication Date is required" }),
   genre: z.string().min(1, { message: "Genre is required" }),
-  publicationYear: z.string().min(1, { message: "Publication year must be a positive integer" }),
+  publicationYear: z
+    .string()
+    .min(1, { message: "Publication year must be a positive integer" }),
   image: z.object({}).nullable().optional(), // Define image as an object, allowing null
 });
 
 export default function AddBookModal({ isOpen, onClose, accessToken }) {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
-    title: '',
-    author: '',
-    publicationHouse: '',
-    publicationDate: '',
-    genre: '',
-    publicationYear: '',
-    status: 'Plan to Read',// Initial value for book status
+    title: "",
+    author: "",
+    publicationHouse: "",
+    publicationDate: "",
+    genre: "",
+    publicationYear: "",
+    status: "Plan to Read", // Initial value for book status
     image: null, // To store the selected image file
-
   });
 
-  const { handleSubmit, register, formState: { errors } } = useForm({
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(addBookSchema),
   });
 
@@ -57,15 +66,15 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
     };
 
     const data = new FormData();
-    data.append('title', updatedFormData.title);
-    data.append('author', updatedFormData.author);
-    data.append('publicationHouse', updatedFormData.publicationHouse);
-    data.append('publicationDate', updatedFormData.publicationDate);
-    data.append('genre', updatedFormData?.genre);
-    data.append('publicationYear', updatedFormData.publicationYear);
-    data.append('status', updatedFormData.status);
-    data.append('image', updatedFormData.image);
-    onClose()
+    data.append("title", updatedFormData.title);
+    data.append("author", updatedFormData.author);
+    data.append("publicationHouse", updatedFormData.publicationHouse);
+    data.append("publicationDate", updatedFormData.publicationDate);
+    data.append("genre", updatedFormData?.genre);
+    data.append("publicationYear", updatedFormData.publicationYear);
+    data.append("status", updatedFormData.status);
+    data.append("image", updatedFormData.image);
+    onClose();
     const mutationResult = await mutation.mutateAsync(data);
     let { success, message } = mutationResult;
     if (success === true) {
@@ -89,15 +98,19 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto flex items-center justify-center">
           <div className="p-8 border w-[600px] shadow-lg rounded-md bg-white">
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 text-rose-500 ">Add Book</h3>
-              <div className="mt-2 px-7 py-3 overflow-y-auto" style={{ maxHeight: "70vh" }}>
-                <form
-                  className="mt-12"
-                  onSubmit={handleSubmit(onSubmit)}
-                >
+              <h3 className="text-2xl font-bold text-gray-900 text-rose-500 ">
+                Add Book
+              </h3>
+              <div
+                className="mt-2 px-7 py-3 overflow-y-auto"
+                style={{ maxHeight: "70vh" }}
+              >
+                <form className="mt-12" onSubmit={handleSubmit(onSubmit)}>
                   {/* Title */}
                   <div className="mb-4">
-                    <label htmlFor="title" className="block mb-1">Title</label>
+                    <label htmlFor="title" className="block mb-1">
+                      Title
+                    </label>
                     <input
                       {...register("title", { required: true })}
                       id="title"
@@ -110,9 +123,7 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                       autoComplete="off"
                     />
                     {errors?.title?.type === "required" && (
-                      <p className="text-red-600 text-sm">
-                        Please enter title
-                      </p>
+                      <p className="text-red-600 text-sm">Please enter title</p>
                     )}
                     {errors?.title && (
                       <p className="text-red-600 text-sm">
@@ -122,11 +133,17 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                   </div>
 
                   <div className="form-control mb-4">
-                    <label htmlFor="author" className="block mb-1">Author Name</label>
-                    <input {...register("author", { required: true })}
+                    <label htmlFor="author" className="block mb-1">
+                      Author Name
+                    </label>
+                    <input
+                      {...register("author", { required: true })}
                       defaultValue={formData.author}
                       onChange={handleChange}
-                      id="author" name="author" type="text" placeholder=" Author"
+                      id="author"
+                      name="author"
+                      type="text"
+                      placeholder=" Author"
                       className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
                     />
 
@@ -140,15 +157,19 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                   {/* Publication House */}
 
                   <div className="form-control mb-4">
-                    <label htmlFor="publicationHouse" className="block mb-1">Publication House</label>
-                    <input {...register("publicationHouse")}
+                    <label htmlFor="publicationHouse" className="block mb-1">
+                      Publication House
+                    </label>
+                    <input
+                      {...register("publicationHouse")}
                       id="publicationHouse"
                       name="publicationHouse"
                       defaultValue={formData.publicationHouse}
                       onChange={handleChange}
                       type="text"
                       className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
-                      placeholder=" Publication House" />
+                      placeholder=" Publication House"
+                    />
 
                     {errors?.publicationHouse && (
                       <p className="text-red-600 text-sm">
@@ -160,10 +181,14 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                   {/* Publication Date */}
 
                   <div className="form-control mb-4">
-                    <label htmlFor="publicationDate" className="block mb-1">Publication Date</label>
+                    <label htmlFor="publicationDate" className="block mb-1">
+                      Publication Date
+                    </label>
                     <input
                       {...register("publicationDate")}
-                      value={formData.publicationDate ? formData.publicationDate : ''}
+                      value={
+                        formData.publicationDate ? formData.publicationDate : ""
+                      }
                       onChange={handleChange}
                       id="publicationDate"
                       type="date"
@@ -182,16 +207,26 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                   {/* Genre */}
 
                   <div className="form-control mb-4">
-                    <label htmlFor="genre" className="block mb-1">Genre</label>
-                    <select {...register("genre")} onChange={handleChange} defaultValue={formData.genre} className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none">
-                      <option value="">Select Genre</option> {/* Add this line */}
+                    <label htmlFor="genre" className="block mb-1">
+                      Genre
+                    </label>
+                    <select
+                      {...register("genre")}
+                      onChange={handleChange}
+                      defaultValue={formData.genre}
+                      className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
+                    >
+                      <option value="">Select Genre</option>{" "}
+                      {/* Add this line */}
                       {genreQuery.isLoading ? (
                         <option>Loading...</option>
                       ) : genreQuery.isError ? (
                         <option>Error fetching genres</option>
                       ) : (
                         genreQuery?.data?.data.map((genre) => (
-                          <option key={genre.id} value={genre.name}>{genre.name}</option>
+                          <option key={genre.id} value={genre.name}>
+                            {genre.name}
+                          </option>
                         ))
                       )}
                     </select>
@@ -206,10 +241,15 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                   {/* Publication Year */}
 
                   <div className="form-control mb-4">
-                    <label htmlFor="publicationYear" className="block mb-1">Publication Year</label>
-                    <input {...register("publicationYear")} defaultValue={formData.publicationYear}
+                    <label htmlFor="publicationYear" className="block mb-1">
+                      Publication Year
+                    </label>
+                    <input
+                      {...register("publicationYear")}
+                      defaultValue={formData.publicationYear}
                       onChange={handleChange}
-                      type="text" className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
+                      type="text"
+                      className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
                     />
 
                     {errors?.publicationYear && (
@@ -221,7 +261,9 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
 
                   {/* Book Status Dropdown */}
                   <div className="form-control mb-4">
-                    <label htmlFor="status" className="block mb-1">Book Status</label>
+                    <label htmlFor="status" className="block mb-1">
+                      Book Status
+                    </label>
                     <select
                       {...register("status")}
                       onChange={handleChange}
@@ -236,10 +278,11 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                     </select>
                   </div>
 
-
                   {/* Image Upload */}
                   <div className="mb-4">
-                    <label htmlFor="image" className="block mb-1">Image</label>
+                    <label htmlFor="image" className="block mb-1">
+                      Image
+                    </label>
                     <input
                       {...register("image", { required: true })}
                       type="file"
@@ -257,7 +300,6 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                     )}
                   </div>
 
-
                   {/* Add Book Button */}
                   <button
                     type="submit"
@@ -270,7 +312,10 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
             </div>
             {/* Close Button */}
             <div className="flex justify-center mt-4">
-              <button onClick={onClose} className="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
                 Close
               </button>
             </div>
