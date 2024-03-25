@@ -3,8 +3,8 @@ import { selectAccessToken } from "@/redux/features/user/slice";
 import { useSelector } from "react-redux";
 import { useBookStatusMutation } from "@/pages/api/user";
 import { useQueryClient } from "react-query";
-// import { useDispatch } from "react-redux";
-// import { saveBookId } from "@/redux/features/book/slice";
+import { useDispatch } from "react-redux";
+import { saveBookId } from "@/redux/features/book/slice";
 import { CLOUDINARY_IMAGE_URL } from "@/utils/config";
 const Bookcard = ({ book }) => {
   const queryClient = useQueryClient();
@@ -22,7 +22,7 @@ const Bookcard = ({ book }) => {
       status: newStatus,
       bookId: book?._id,
     };
-    // dispatch(saveBookId(book?._id));
+    dispatch(saveBookId(book?._id));
      updateBookStatus.mutateAsync(data);
     queryClient.invalidateQueries("books");
   };
