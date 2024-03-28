@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaPlus, FaSignOutAlt, FaTrash } from "react-icons/fa";
 import Bookcard from "@/components/book/card";
 import AddBookModal from "@/components/book/create/modal";
@@ -15,16 +15,22 @@ import {
 import { useDeleteBookMutation } from "@/pages/api/user";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getBook } from "@/redux/features/book/slice";
+import { useQueryClient, useQuery } from "react-query";
+import { getBooks } from "@/pages/api/user";
 const BookshelfMenu = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
-  const [books, setBooks] = useState([]);
+  const dataRef = useRef([]);
+
   const [filteredBooks, setFilteredBooks] = useState(null); // Initialize filteredBooks with null
   const [filteredPlanToReadBooks, setFilteredPlanToReadBooks] = useState(null); // Initialize filteredBooks with null
   const [filteredCompletedBooks, setFilteredCompletedBooks] = useState(null); // Initialize filteredBooks with null
 
-  const accessToken = useSelector(selectAccessToken);
+  let accessToken = useSelector(selectAccessToken);
+  let books = useSelector(getBook);
   if (accessToken === null) {
     router.push("/login");
   }
@@ -41,15 +47,15 @@ const BookshelfMenu = () => {
   };
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
-      let filteredReadingBooks = books?.filter(
+      let filteredReadingBooks = dataRef.current?.filter(
         (book) =>
           book.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
           book.status === "Reading"
       );
       setFilteredBooks(
         filteredReadingBooks.length > 0 ? filteredReadingBooks : []
-      ); // If no books match the search query, set filteredBooks to null
-      let filteredPlanToReadBooks = books?.filter(
+      );
+      let filteredPlanToReadBooks = dataRef.current?.filter(
         (book) =>
           book.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
           book.status === "Plan to Read"
@@ -57,7 +63,7 @@ const BookshelfMenu = () => {
       setFilteredPlanToReadBooks(
         filteredPlanToReadBooks.length > 0 ? filteredPlanToReadBooks : []
       );
-      let filteredCompletedBooks = books?.filter(
+      let filteredCompletedBooks = dataRef.current?.filter(
         (book) =>
           book.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
           book.status === "Completed"
@@ -73,26 +79,37 @@ const BookshelfMenu = () => {
         dispatch(fetchFeaturedBooks(filteredCompletedBooks));
     }
   };
-  let getBooks = useGetBooksQuery(accessToken);
+  const {
+    data: getBooksData,
+    isError,
+    isSuccess,
+  } = useQuery({
+    queryFn: async () => await getBooks(accessToken),
+    queryKey: ["books"], //Array according to Documentation
+  });
   useEffect(() => {
-    if (getBooks.isSuccess === true) {
-      setBooks(getBooks?.data?.data);
-      dispatch(fetchBooks(getBooks?.data?.data));
-    } else if (getBooks.isError === true) {
-      if (getBooks.error.message.includes("Forbidden")) {
-        toast.error("Your token is expired");
-      } else if (getBooks.error.message.includes("Failed to fetch books")) {
-      }
-      dispatch(fetchBooks([])); // Clear books array
-      setBooks([]); // Also clear local state
+    if (isSuccess) {
+      dataRef.current = getBooksData?.data;
+
+      dispatch(fetchBooks(getBooksData?.data));
     }
-  }, [getBooks.isSuccess, getBooks.isError, getBooks.error, dispatch]);
+
+    if (isError === true) {
+      const { error } = getBooksData;
+      if (error.message.includes("Forbidden")) {
+        toast.error("Your token is expired");
+      } else if (error.message.includes("Failed to fetch books")) {
+      }
+    }
+  }, [dispatch, isSuccess, isError, getBooksData]);
 
   // Delete Account
   const bookDeleted = useDeleteBookMutation(accessToken);
   const deleteAccount = async () => {
     bookDeleted.mutateAsync();
     dispatch(deleteBook([]));
+    dataRef.current = [];
+    queryClient.invalidateQueries("books");
   };
 
   return (
@@ -153,12 +170,13 @@ const BookshelfMenu = () => {
                 ? filteredBooks.map((book) => (
                     <Bookcard key={book._id} book={book} />
                   ))
-                : books
+                : dataRef.current
                     ?.filter((book) => book.status === "Reading")
                     ?.map((book) => <Bookcard key={book._id} book={book} />)}
             </div>
 
-            {!books?.filter((book) => book.status === "Reading")?.length && (
+            {!dataRef.current?.filter((book) => book.status === "Reading")
+              ?.length && (
               <div className="mt-12 text-gray-600">No Books Found</div>
             )}
           </div>
@@ -174,12 +192,13 @@ const BookshelfMenu = () => {
                   ? filteredPlanToReadBooks.map((book) => (
                       <Bookcard key={book._id} book={book} />
                     ))
-                  : books
+                  : dataRef.current
                       ?.filter((book) => book.status === "Plan to Read")
                       ?.map((book) => <Bookcard key={book._id} book={book} />)}
               </div>
-              {!books?.filter((book) => book.status === "Plan to Read")
-                ?.length && (
+              {!dataRef.current?.filter(
+                (book) => book.status === "Plan to Read"
+              )?.length && (
                 <div className="mt-12 text-gray-600">No Books Found</div>
               )}
             </div>
@@ -194,11 +213,12 @@ const BookshelfMenu = () => {
                 ? filteredCompletedBooks.map((book) => (
                     <Bookcard key={book._id} book={book} />
                   ))
-                : books
+                : dataRef.current
                     ?.filter((book) => book.status === "Completed")
                     ?.map((book) => <Bookcard key={book._id} book={book} />)}
             </div>
-            {!books?.filter((book) => book.status === "Completed")?.length && (
+            {!dataRef.current?.filter((book) => book.status === "Completed")
+              ?.length && (
               <div className="mt-12 text-gray-600">No Books Found</div>
             )}
           </div>
