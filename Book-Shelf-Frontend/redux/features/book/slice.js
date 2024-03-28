@@ -41,6 +41,9 @@ const booksSlice = createSlice({
 
 // Export actions from each slice
 export const { fetchBooks, deleteBook, saveBookId, fetchFeaturedBooks } = booksSlice.actions;
+
+export const getBook = (state) => state.books.books;
+
 // Combine reducers from each slice
 export default booksSlice.reducer;
 

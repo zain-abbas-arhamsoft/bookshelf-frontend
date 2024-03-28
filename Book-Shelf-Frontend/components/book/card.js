@@ -8,7 +8,7 @@ import { saveBookId } from "@/redux/features/book/slice";
 import { CLOUDINARY_IMAGE_URL } from "@/utils/config";
 const Bookcard = ({ book }) => {
   const queryClient = useQueryClient();
-//   const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const accessToken = useSelector(selectAccessToken);
   let updateBookStatus = useBookStatusMutation(accessToken);
   const getBookId = async (book) => {
@@ -23,7 +23,7 @@ const Bookcard = ({ book }) => {
       bookId: book?._id,
     };
     dispatch(saveBookId(book?._id));
-     updateBookStatus.mutateAsync(data);
+       await updateBookStatus.mutateAsync(data);
     queryClient.invalidateQueries("books");
   };
   return (

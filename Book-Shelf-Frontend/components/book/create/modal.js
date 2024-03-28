@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +26,7 @@ const addBookSchema = z.object({
 
 export default function AddBookModal({ isOpen, onClose, accessToken }) {
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState({
+  const formDataRef = useRef({
     title: "",
     author: "",
     publicationHouse: "",
@@ -50,18 +50,18 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
+    formDataRef.current = {
+      ...formDataRef.current,
       [name]: value,
-    }));
+    };
   };
 
   const onSubmit = async () => {
     const selectedGenre = genreQuery.data.data.find(
-      (genre) => genre.name === formData.genre
+      (genre) => genre.name === formDataRef.current.genre
     );
     const updatedFormData = {
-      ...formData,
+      ...formDataRef.current,
       genre: selectedGenre?._id,
     };
 
@@ -86,10 +86,10 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setFormData((prevFormData) => ({
-      ...prevFormData,
+    formDataRef.current = {
+      ...formDataRef.current,
       image: file,
-    }));
+    };
   };
   return (
     <>
@@ -116,7 +116,7 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                       id="title"
                       name="title"
                       type="text"
-                      defaultValue={formData.title}
+                      defaultValue={formDataRef.current.title}
                       onChange={handleChange}
                       className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
                       placeholder="Title"
@@ -138,7 +138,7 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                     </label>
                     <input
                       {...register("author", { required: true })}
-                      defaultValue={formData.author}
+                      defaultValue={formDataRef.current.author}
                       onChange={handleChange}
                       id="author"
                       name="author"
@@ -164,7 +164,7 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                       {...register("publicationHouse")}
                       id="publicationHouse"
                       name="publicationHouse"
-                      defaultValue={formData.publicationHouse}
+                      defaultValue={formDataRef.current.publicationHouse}
                       onChange={handleChange}
                       type="text"
                       className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
@@ -187,7 +187,9 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                     <input
                       {...register("publicationDate")}
                       value={
-                        formData.publicationDate ? formData.publicationDate : ""
+                        formDataRef.current.publicationDate
+                          ? formDataRef.current.publicationDate
+                          : ""
                       }
                       onChange={handleChange}
                       id="publicationDate"
@@ -213,7 +215,7 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                     <select
                       {...register("genre")}
                       onChange={handleChange}
-                      defaultValue={formData.genre}
+                      defaultValue={formDataRef.current.genre}
                       className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
                     >
                       <option value="">Select Genre</option>{" "}
@@ -246,7 +248,7 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                     </label>
                     <input
                       {...register("publicationYear")}
-                      defaultValue={formData.publicationYear}
+                      defaultValue={formDataRef.current.publicationYear}
                       onChange={handleChange}
                       type="text"
                       className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
@@ -267,7 +269,7 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                     <select
                       {...register("status")}
                       onChange={handleChange}
-                      value={formData.status}
+                      value={formDataRef.current.status}
                       id="status"
                       name="status"
                       className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"
@@ -288,7 +290,7 @@ export default function AddBookModal({ isOpen, onClose, accessToken }) {
                       type="file"
                       id="image"
                       name="image"
-                      defaultValue={formData?.image}
+                      defaultValue={formDataRef.current?.image}
                       accept="image/*"
                       onChange={handleImageChange}
                       className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600 focus:outline-none"

@@ -1,6 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from "react-query";
 import { LIVE_URL, BASE_URL } from "@/utils/config";
-
+import { useQuery, useMutation } from "react-query";
 export function useGenresQuery(accessToken) {
   return useQuery("genres", async () => {
     const response = await fetch(`${LIVE_URL}v1/book/genre`, {
@@ -14,29 +13,30 @@ export function useGenresQuery(accessToken) {
     return response.json();
   });
 }
-
-export function useGetBooksQuery(accessToken) {
-  const queryClient = useQueryClient();
-
-  return useQuery(
-    "books",
-    async () => {
-      const response = await fetch(`${LIVE_URL}v1/book/books`, {
-        headers: {
-          Authorization: accessToken,
-        },
-      });
-
-      if (response.status === 403) throw new Error(response.statusText);
-      if (!response.ok) throw new Error("Failed to fetch books");
-
-      return response.json();
+export function getBooks(accessToken) {
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: accessToken,
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("books");
+  };
+  const response = fetch(`${LIVE_URL}v1/book/books`, options)
+    .then((response) => response.json())
+    .catch((err) => console.error(err));
+  return response;
+}
+
+export function useBookStatusMutation(accessToken) {
+  return useMutation((bookStatus) =>
+    fetch(`${LIVE_URL}v1/book/update-status`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        Authorization: accessToken,
       },
-    }
+      body: JSON.stringify(bookStatus),
+    }).then((res) => res.json())
   );
 }
 
@@ -73,27 +73,6 @@ export function useCreateBookMutation(accessToken) {
       },
       body: bookData,
     }).then((res) => res.json())
-  );
-}
-
-
-export function useBookStatusMutation(accessToken) {
-  const queryClient = useQueryClient();
-  return useMutation(
-    (bookStatus) =>
-      fetch(`${LIVE_URL}v1/book/update-status`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: accessToken,
-        },
-        body: JSON.stringify(bookStatus),
-      }).then((res) => res.json()),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("books");
-      },
-    }
   );
 }
 
